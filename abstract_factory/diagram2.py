@@ -15,14 +15,18 @@ def create_diagram(factory):
   return diagram
 
 def main():
+  # Print the diagram on stdout
   if len(sys.argv) > 1 and sys.argv[1] == '-P':
     create_diagram(DiagramFactory).save(sys.stdout)
     create_diagram(SvgDiagramFactory).save(sys.stdout)
     return
+
+  # Create text form diagram
   txtDiagram = create_diagram(DiagramFactory)
   txtDiagram.save(textFilename)
   print('wrote', textFilename)
 
+  # Create svg form diagram
   svgDiagram = create_diagram(SvgDiagramFactory)
   svgDiagram.save(svgFilename)
   print('wrote', svgFilename)
