@@ -20,7 +20,7 @@ else:
     format_str = "\x1B[{}m{}\x1B[0m"
     return format_str.format(43 if background == BLACK else 47, char or " ")
 
-
+# Define AbstractBoard class
 class AbstractBoard:
   def __init__(self, rows, columns):
     self.board = [[None for _ in range(columns)] for _ in range(rows)]
@@ -38,6 +38,7 @@ class AbstractBoard:
       squares.append("\n")
     return "".join(squares)
 
+# 国际跳棋
 class CheckersBoard(AbstractBoard):
   def __init__(self):
     self.populate_board()
@@ -52,10 +53,12 @@ class CheckersBoard(AbstractBoard):
             (None, None), (None, None),
             (None, white()), (white(), None), (None, white()),
             (white(), None))
+    # More information about itertools modular
+    # https://docs.python.org/3.5/library/itertools.html?highlight=itertools#module-itertools
     self.board = [list(itertools.islice(
       itertools.cycle(squares), 0, len(rows))) for squares in rows]
 
-
+# 国际象棋
 class ChessBoard(AbstractBoard):
   def __init__(self):
     super().__init__(8, 8)
@@ -80,16 +83,22 @@ def create_piece(kind, color):
 
 
 class Piece(str):
+  # To save memory space
+  # https://docs.python.org/3.5/reference/datamodel.html?highlight=__slots__#object.__slots__
   __slots__ = ()
 
 
 for code in itertools.chain((0x26C0, 0x26C2), range(0x2654, 0x2660)):
+  # Get the character whose unicode code is the integer code
   char = chr(code)
+  # Get the name of character assigned to char
   name = unicodedata.name(char).title().replace(" ", "")
   if name.endswith("sMan"):
     name = name[:-4]
+  # new is a function
   new = (lambda char: lambda Class: Piece.__new__(Class, char))(char)
   new.__name__ = "__new__"
+  # https://docs.python.org/3.5/library/functions.html?highlight=type#type
   Class = type(name, (Piece,), dict(__slots__=(), __new__=new))
   globals()[name] = Class
 
